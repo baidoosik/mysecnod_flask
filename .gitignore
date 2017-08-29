@@ -1,0 +1,11 @@
+*.pyc
+__pycache__
+myvenv
+*.sqlite
+.DS_Store
+*.json
+*.pickle
+*/static/
+/db.sqlite3
+.idea
+mail.py

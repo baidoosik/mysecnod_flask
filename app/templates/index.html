@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flask{% endblock %}
+
+{% block navbar %}
+
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+            data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+
+            </button>
+            <a class="navbar-brand" href="/">flasky</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="{{ url_for('.profile',id=1) }}">Profile</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&time;</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        <h1> welcome to flask world</h1>
+        <h2>{% if name %}{{ name }}{% else %}stranger{% endif %}</h2>
+        {% if not known %}
+        <p>pleased to meet you!</p>
+        {% else %}
+        <p>happy to see you agin!</p>
+        {% endif %}
+         <div class="form">
+            {{ wtf.quick_form(form) }}
+         </div>
+    </div>
+</div>
+{% endblock %}

@@ -38,12 +38,7 @@
         </div>
         {% endfor %}
         <h1> welcome to flask world</h1>
-        <h2>{% if name %}{{ name }}{% else %}stranger{% endif %}</h2>
-        {% if not known %}
-        <p>pleased to meet you!</p>
-        {% else %}
-        <p>happy to see you agin!</p>
-        {% endif %}
+        <h1>Hello, {% if current_user.is_authenticated %}{{ current_user.user_name }}{% else %}Stranger{% endif %}!</h1>
          <div class="form">
             {{ wtf.quick_form(form) }}
          </div>

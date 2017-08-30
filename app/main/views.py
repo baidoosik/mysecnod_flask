@@ -10,7 +10,6 @@ from core.crawling import naver_crawling
 @main.route('/',methods=['GET','POST'])
 def index():
     form =NameForm()
-    name = session['name']
     if form.validate_on_submit():
 
         flash('메일로 크롤링 정보를 보내드렸습니다.')
@@ -24,7 +23,7 @@ def index():
 
         return redirect(url_for('.index')) #post/rediret/get patter 기법. 마지막 요청을 post로 남기지 않기 위해.
 
-    return render_template('index.html',form=form,name=name)
+    return render_template('index.html',form=form)
 
 @main.route('/profile/<int:id>/')
 def profile(id):

@@ -3,6 +3,5 @@ from wtforms import StringField,SubmitField
 from wtforms.validators import Email,Required
 
 class NameForm(FlaskForm):
-    name= StringField('what is your name?',validators=[Required()])
-    email = StringField('what is your e-mail?',validators=[Required(),Email()])
+    email = StringField('크롤링한 정보를 받을 이메일 주소를 입력해주세요.',validators=[Required(),Email()])
     submit =SubmitField('Submit')

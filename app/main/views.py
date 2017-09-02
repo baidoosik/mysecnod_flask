@@ -28,4 +28,5 @@ def index():
 @main.route('/profile/<int:id>/')
 def profile(id):
     user = User.query.get_or_404(id)
+
     return render_template('profile.html',user=user)

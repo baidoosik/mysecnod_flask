@@ -4,8 +4,26 @@ from flask_login import login_user, logout_user, login_required, current_user
 from . import auth
 from .. import db
 from ..models import User
-from .forms import LoginForm,RegistrationForm
+from .forms import LoginForm,RegistrationForm, PasswordChangeForm
 from ..email import Mail
+
+
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
+
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main.index'))
+    return render_template('auth/unconfirmed.html')
+
 
 @auth.route('/login',methods=['GET','POST'])
 def login():
@@ -37,10 +55,9 @@ def register():
                     password=form.password.data
                     )
         db.session.add(user)
-        db.session.commit()
+        db.session.commit()# token 생성을 위해서
 
         token= user.generate_confirmation_token()
-        token = token.decode('utf-8')
         token_url = 'http://127.0.0.1:5000/auth/confirm/'+token
         mail=Mail(token_url,user.email)
         t=threading.Thread(target=mail.naver_send_email) # 다른 스레드이용.
@@ -52,6 +69,7 @@ def register():
     return render_template('auth/register.html',form=form)
 
 @auth.route('/confirm/<token>')
+@login_required
 def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
@@ -63,3 +81,22 @@ def confirm(token):
         flash("your link is invalid")
 
     return redirect(url_for('main.index'))
+
+
+@auth.route('/profile/<int:id>/password_change/',methods=['GET','POST'])
+@login_required
+def password_change(id):
+    user = User.query.get(id)
+    form = PasswordChangeForm()
+
+    if form.validate_on_submit():
+        if user.verify_password(form.present_password.data):
+            user.password=form.change_password.data
+            db.session.add(user)
+            flash('비밀번호 변경이 완료 됐습니다.')
+            return redirect(url_for('main.profile',id=user.id))
+        else:
+            flash("현재 비밀번호가 올바르지 않습니다.")
+            return redirect(url_for('auth.password_change'))
+
+    return render_template('auth/password_change.html',form=form)

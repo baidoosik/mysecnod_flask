@@ -9,6 +9,8 @@
         <h1>hello {{ user.user_name }}!</h1>
         <h2>e-mail: {{ user.email }}</h2>
         <h3><a href="{{ url_for('auth.password_change', id=user.id) }}">password change</a></h3>
+        <h3><a href="{{ url_for('auth.email_change', id=user.id) }}">email change</a></h3>
+
     </div>
 </div>
 {% endblock %}

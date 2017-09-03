@@ -61,7 +61,7 @@ class User(UserMixin, db.Model):
         if self.role is None:
             if self.email =='qoentlr37@naver.com':
                 self.role = Role.query.filter_by(permissions=0xff).first()
-            if self.role in None:
+            if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
 
     @property

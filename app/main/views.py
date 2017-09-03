@@ -1,11 +1,20 @@
 import threading
 from flask import render_template, session, redirect, url_for, current_app,flash
+from flask_login import login_required
 from .. import db
 from ..models import User
 from ..email import Mail
 from . import main
 from .forms import NameForm
 from core.crawling import naver_crawling
+from ..decorator import admin_required, permission_required
+
+
+@main.route('/admin/')
+@login_required
+@admin_required
+def admin_only():
+    return 'For Admin'
 
 @main.route('/',methods=['GET','POST'])
 def index():

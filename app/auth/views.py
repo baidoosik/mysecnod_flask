@@ -8,6 +8,7 @@ from .forms import LoginForm,RegistrationForm, PasswordChangeForm,EmailChangeFor
 from ..email import Mail
 
 
+
 @auth.before_app_request
 def before_request():
     if current_user.is_authenticated \

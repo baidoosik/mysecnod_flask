@@ -8,6 +8,20 @@
     <div class="page-header">
         <h1>hello {{ user.user_name }}!</h1>
         <h2>e-mail: {{ user.email }}</h2>
+        {% if user.name or user.location %}
+        <p>
+            {% if user.name %}{{ user.name }}{% endif %}
+            {% if user.location %}
+                From <a href="http://maps.google.com/?q={{ user.location }}" target="_blank">{{ user.location }}</a>
+            {% endif %}
+        </p>
+        {% endif %}
+        {% if current_user.is_administrator() %}
+        <p><a href ="mailto:{{ user.email }}">{{ user.email }}</a></p>
+        {% endif %}
+        {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+        <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
+        <h3><a href="{{ url_for('main.edit_profile', user_name=user.user_name) }}">Edit Profile</a></h3>
         <h3><a href="{{ url_for('auth.password_change', id=user.id) }}">password change</a></h3>
         <h3><a href="{{ url_for('auth.email_change', id=user.id) }}">email change</a></h3>
 

@@ -38,6 +38,16 @@ class UserModelTestCase(unittest.TestCase):
         u2= User(password='cat')
         self.assertFalse(u.password_hash==u2.password_hash)
 
+    def test_initial_confirm_token(self):
+        u=User(password='cat')
+        print(u.confirmed)
+        self.assertFalse(u.confirmed)
+
+    def test_confirm_token(self):
+        u=User(password='cat')
+        token = u.generate_confirmation_token()
+        self.assertTrue(u.confirm(token) is True)
+
     def test_roles_and_permissions(self):
         Role.insert_roles()
         u =User(email='john@example.com',password='cat')

@@ -2,10 +2,10 @@ import threading
 from flask import render_template, session, redirect, url_for, current_app,flash, abort
 from flask_login import login_required
 from .. import db
-from ..models import User
+from ..models import User,Role
 from ..email import Mail
 from . import main
-from .forms import NameForm,EditProfileForm
+from .forms import NameForm,EditProfileForm,EditProfileAdminForm
 from core.crawling import naver_crawling
 from ..decorator import admin_required, permission_required
 
@@ -60,5 +60,34 @@ def edit_profile(user_name):
         return redirect(url_for('main.profile',user_name=user_name))
 
     return render_template('edit_profile.html',form=form)
+
+
+@main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_profile_admin(id):
+    user = User.query.get_or_404(id)
+    form = EditProfileAdminForm(user=user)
+    if form.validate_on_submit():
+        user.email = form.email.data
+        user.user_name = form.user_name.data
+        user.confirmed = form.confirmed.data
+        user.role = Role.query.get(form.role.data)
+        user.name = form.name.data
+        user.location = form.location.data
+        user.about_me = form.about_me.data
+        db.session.add(user)
+        flash('The profile has been updated.')
+        return redirect(url_for('.user', username=user.username))
+    form.email.data = user.email
+    form.user_name.data = user.user_name
+    form.confirmed.data = user.confirmed
+    form.role.data = user.role_id
+    form.name.data = user.name
+    form.location.data = user.location
+    form.about_me.data = user.about_me
+
+    return render_template('edit_profile.html', form=form, user=user)
+
 
 

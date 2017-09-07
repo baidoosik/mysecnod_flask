@@ -60,7 +60,7 @@ def register():
         db.session.commit()# token 생성을 위해서
 
         token= user.generate_confirmation_token()
-        token_url = 'http://127.0.0.1:5000/auth/confirm/'+token
+        token_url = 'http://127.0.0.1:5000 /auth/confirm/'+token
         mail=Mail(token_url,user.email)
         t=threading.Thread(target=mail.naver_send_email) # 다른 스레드이용.
         t.start()

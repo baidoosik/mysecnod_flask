@@ -1,13 +1,14 @@
 import threading
-from flask import render_template, session, redirect, url_for, current_app,flash, abort
-from flask_login import login_required
+from flask import render_template, session, redirect, url_for,flash, abort,request
+from flask_login import login_required,current_user
 from .. import db
-from ..models import User,Role
+from ..models import User,Role,Post
 from ..email import Mail
 from . import main
 from .forms import NameForm,EditProfileForm,EditProfileAdminForm
 from core.crawling import naver_crawling
 from ..decorator import admin_required, permission_required
+
 
 
 @main.route('/admin/')
@@ -34,7 +35,13 @@ def index():
 
         return redirect(url_for('.index')) #post/rediret/get patter 기법. 마지막 요청을 post로 남기지 않기 위해.
 
-    return render_template('index.html',form=form)
+    page = request.args.get('page',1,type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page,per_page=10,error_out=False
+    )
+    posts = pagination.items
+
+    return render_template('index.html',form=form,posts=posts,pagination=pagination)
 
 @main.route('/profile/<user_name>/')
 def profile(user_name):

@@ -8,4 +8,3 @@ flask-email
 flask-moment
 requests
 bs4
-forgerypy

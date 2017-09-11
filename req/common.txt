@@ -8,3 +8,6 @@ flask-email
 flask-moment
 requests
 bs4
+flask-pagedown
+markdown
+bleach

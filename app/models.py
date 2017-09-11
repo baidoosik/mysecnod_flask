@@ -4,6 +4,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db,login_manager
+from markdown import markdown
+import bleach
 
 
 class Permission:
@@ -156,6 +158,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128),index=True,default=None)
     content = db.Column(db.Text)
+    content_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default= datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -178,3 +181,14 @@ class Post(db.Model):
 
     def __str__(self):
         return self.title
+
+    @staticmethod
+    def on_changed_content(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.content_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+db.event.listen(Post.content, 'set', Post.on_changed_content)

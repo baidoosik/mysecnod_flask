@@ -31,3 +31,31 @@ def post_list():
     return render_template('blog/post_list.html',{
         'post_list':post_qs
     })
+
+
+@blog.route('/post/detail/<int:id>', methods=['GET'])
+@login_required
+def post_detail(id):
+    post = Post.query.get_or_404(id)
+    return render_template('blog/post_detail.html',post=post)
+
+@blog.route('/post/edit/<int:id>', methods=['GET','Post'])
+@login_required
+def post_edit(id):
+    post = Post.query.get_or_404(id)
+
+    if current_user !=post.author and \
+        not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form =PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.add(post)
+        flash('the post is editted !')
+        return redirect(url_for('blog.post_detail',id=post.id))
+
+    form.content.data = post.content
+    form.title.data = post.title
+
+    return render_template('blog/post_edit.html',form=form)

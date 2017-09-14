@@ -1,11 +1,11 @@
 import threading
-from flask import render_template, session, redirect, url_for,flash, abort
+from flask import render_template, session, redirect, url_for,flash, abort, request, current_app
 from flask_login import login_required,current_user
 from .. import db
-from ..models import User,Role,Post,Permission
+from ..models import User,Role,Post,Permission, Comment
 from ..email import Mail
 from . import blog
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from ..decorator import admin_required, permission_required
 
 @blog.route('/post/new', methods=['GET', 'POST'])
@@ -33,11 +33,32 @@ def post_list():
     })
 
 
-@blog.route('/post/detail/<int:id>', methods=['GET'])
+@blog.route('/post/detail/<int:id>', methods=['GET','POST'])
 @login_required
 def post_detail(id):
     post = Post.query.get_or_404(id)
-    return render_template('blog/post_detail.html',post=post)
+
+    comment_form = CommentForm()
+
+    if comment_form.validate_on_submit():
+        comment = Comment(author=current_user._get_current_object(),
+                          body=comment_form.body.data,
+                          post=post)
+        db.session.add(comment)
+        flash('your comment is published')
+
+        return redirect(url_for('blog.post_detail',id=post.id,page=-1))
+    page = request.args.get('page',1,type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+            5 + 1
+    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+        page,per_page=5,error_out=False
+    )
+    comments = pagination.items
+
+    return render_template('blog/post_detail.html',post=post,
+                           form=comment_form, comments=comments,pagination=pagination)
 
 @blog.route('/post/edit/<int:id>', methods=['GET','Post'])
 @login_required

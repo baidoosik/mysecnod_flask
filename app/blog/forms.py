@@ -8,3 +8,8 @@ class PostForm(FlaskForm):
     title = StringField('title',validators=[Required(), Length(1, 64)])
     content = PageDownField("what's on your mind?", validators=[Required()])
     submit = SubmitField('Submit')
+
+
+class CommentForm(FlaskForm):
+    body = TextAreaField('body',validators=[Required()])
+    submit = SubmitField('Submit')

@@ -32,6 +32,35 @@
             </div>
         </div>
     </li>
+    <div class="post-footer">
+    {% if current_user == post.author %}
+        <a href="{{ url_for('blog.post_edit', id=post.id) }}">
+            <span class="label label-primary">Edit</span>
+        </a>
+        {% elif current_user.is_administrator() %}
+        <a href="{{ url_for('blog.edit', id=post.id) }}">
+            <span class="label label-danger">Edit [Admin]</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('blog.post_detail', id=post.id) }}">
+            <span class="label label-default">Permalink</span>
+        </a>
+        <a href="{{ url_for('blog.post_detail', id=post.id) }}#comments">
+            <span class="label label-primary">{{ post.comments.count() }} Comments</span>
+        </a>
+    </div>
+    <h4 id="comments">Comments</h4>
+    {% if current_user.can(Permission.COMMENT) %}
+    <div class="comment-form">
+        {{ wtf.quick_form(form) }}
+    </div>
+    {% endif %}
+    {% include 'blog/_comment.html' %}
+    {% if pagination %}
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, 'blog.post_detail', fragment='#comments', id=post.id) }}
+    </div>
+    {% endif %}
 
     </ul>
 </div>

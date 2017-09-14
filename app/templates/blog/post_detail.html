@@ -48,12 +48,12 @@
         <a href="{{ url_for('blog.post_detail', id=post.id) }}#comments">
             <span class="label label-primary">{{ post.comments.count() }} Comments</span>
         </a>
-    </div>
+    </div><hr>
     <h4 id="comments">Comments</h4>
     {% if current_user.can(Permission.COMMENT) %}
     <div class="comment-form">
         {{ wtf.quick_form(form) }}
-    </div>
+    </div><hr>
     {% endif %}
     {% include 'blog/_comment.html' %}
     {% if pagination %}

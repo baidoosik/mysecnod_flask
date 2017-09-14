@@ -80,3 +80,39 @@ def post_edit(id):
     form.title.data = post.title
 
     return render_template('blog/post_edit.html',form=form)
+
+
+@blog.route('/post/comment/moderate')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate():
+    page = request.args.get('page',1,type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+        page,per_page=5,error_out=False
+    )
+    comments = pagination.items
+
+    return render_template('blog/moderate.html', comments=comments,
+                           pagination=pagination, page=page)
+
+
+@blog.route('/post/comment//moderate/enable/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate_enable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = False
+    db.session.add(comment)
+    return redirect(url_for('.moderate',
+                            page=request.args.get('page', 1, type=int)))
+
+
+@blog.route('/post/comment//moderate/disable/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate_disable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = True
+    db.session.add(comment)
+    return redirect(url_for('.moderate',
+                            page=request.args.get('page', 1, type=int)))

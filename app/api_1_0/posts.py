@@ -6,7 +6,7 @@ from .decorators import permission_required
 from .errors import forbidden
 
 
-@api.route('/posts',method=['POST'])
+@api.route('/posts/',methods=['POST'])
 @permission_required(Permission.WRITE_ARTICLES)
 def new_post():
     post = Post.from_json(request.json)

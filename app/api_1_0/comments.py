@@ -57,7 +57,7 @@ def get_post_comments(id):
     })
 
 
-@api.route('/posts/<int:id>/comments/new',method=['POST'])
+@api.route('/posts/<int:id>/comments/new',methods=['POST'])
 @permission_required(Permission.COMMENT)
 def new_post_comment(id):
     post = Post.query.get_or_404(id)

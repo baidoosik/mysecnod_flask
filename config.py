@@ -8,6 +8,7 @@ with open('envs.json','r') as f:
 
 class Config:
     SECRET_KEY = envs['csrf_key'] or 'hard to guess string'
+    FLASKY_POSTS_PER_PAGE =10
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 

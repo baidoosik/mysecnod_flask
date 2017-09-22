@@ -22,6 +22,7 @@ def before_request():
 
 @auth.route('/unconfirmed')
 def unconfirmed():
+    flash('You have not confirmed your account yet')
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html')

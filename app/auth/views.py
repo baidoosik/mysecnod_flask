@@ -6,6 +6,7 @@ from .. import db
 from ..models import User
 from .forms import LoginForm,RegistrationForm, PasswordChangeForm,EmailChangeForm
 from ..email import Mail
+from ..email import send_async_mail
 
 
 
@@ -59,12 +60,12 @@ def register():
                     )
         db.session.add(user)
         db.session.commit()# token 생성을 위해서
-
         token= user.generate_confirmation_token()
         token_url = 'http://127.0.0.1:5000 /auth/confirm/'+token
-        mail=Mail(token_url,user.email)
-        t=threading.Thread(target=mail.naver_send_email) # 다른 스레드이용.
-        t.start()
+        send_async_mail.delay(token_url,user.email)
+        # mail=Mail(token_url,user.email)
+        # t=threading.Thread(target=mail.naver_send_email) # 다른 스레드이용.
+        # t.start()
         flash('finish sign up process check your mail')
 
         return redirect(url_for('auth.login'))

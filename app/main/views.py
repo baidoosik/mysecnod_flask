@@ -7,7 +7,7 @@ from ..models import User,Role,Post,Permission
 from ..email import Mail
 from . import main
 from .forms import NameForm,EditProfileForm,EditProfileAdminForm
-from core.crawling import naver_crawling
+from ...core.crawling import naver_crawling
 from ..decorator import admin_required, permission_required
 
 
